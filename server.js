@@ -36,17 +36,17 @@ var ShortURL = mongoose.model('URL', urlSchema);
 // Creating doc instance
 var createAndSaveURL = (orig, done) => {
   let shortened_url = Math.floor(Math.random()*1000);
-  console.log(shortened_url);
+  // console.log(shortened_url);
 
   var example = new ShortURL({
     original: orig,
     shortened: shortened_url
   });
-  console.log(example);
+  // console.log(example);
 
   example.save(function(err, data){
     if (err) return console.log(err);
-    console.log(data);
+    // console.log(data);
     done(null, data);
   })
 };
@@ -96,24 +96,51 @@ app.get('/api/hello', function(req, res) {
   res.json({ greeting: 'hello API' });
 });
 
-app.post('/api/shorturl', urlencodedParser, (req, res) => {
-  input_url = req.body.url;
+// Remove
+app.post('/removeAll', urlencodedParser, function(req, res) {
+  console.log(req.body);
+  const nameToRemove = req.body.url;
+  ShortURL.remove({ original: nameToRemove }, function(err, data) {
+    if (err) return console.log(err);
+    console.log(data);
+    res.status(200).json({
+      "deleted": nameToRemove
+    });
+  });
+})
 
+app.post('/api/shorturl', urlencodedParser, (req, res) => {
+  // Parse input
+  input_url = req.body.url;
+  
+  // Input Validation
   if (!input_url.includes("http://")) {
     res.status(200).json({
       "error":"invalid url" 
     });
-  }
-  
-  else {
-    createAndSaveURL(input_url, function(err, data) {
+  } else {
+    // Check if object exists
+    ShortURL.find({ original: input_url}, function(err, data) {
       if (err) return console.log(err);
-      if (!data) return console.log("Missing");
-      console.log(data);
-      res.status(200).json({
-        "original_url":input_url,
-        "short_url":data['shortened']
-      });
+      if (data.length != 0) {
+        console.log("Exists", data);
+        const shorty = data[0]['shortened'];
+        res.status(200).json({
+          original_url: input_url,
+          short_url: shorty
+        });
+      } else {
+        console.log("None found");
+        createAndSaveURL(input_url, function(err, data) {
+          if (err) return console.log(err);
+          if (!data) return console.log("Missing");
+          console.log("New entry", data);
+          res.status(200).json({
+            original_url:input_url,
+            short_url:data['shortened']
+          });
+        });
+      }
     });  
   }
 });
