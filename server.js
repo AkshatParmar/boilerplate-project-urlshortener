@@ -117,7 +117,7 @@ app.post('/api/shorturl', urlencodedParser, (req, res) => {
   // Input Validation
   if (!httpRegex.test(input_url)) {
     res.status(401).json({
-      "error":"Invalid URL" 
+      "error":"invalid url" 
     });
   } else {
     // Check if object exists
