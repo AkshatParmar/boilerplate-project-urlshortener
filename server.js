@@ -116,7 +116,7 @@ app.post('/api/shorturl', urlencodedParser, (req, res) => {
   const httpRegex = /^(http|https)(:\/\/)/;
   // Input Validation
   if (!httpRegex.test(input_url)) {
-    res.status(401).json({
+    res.json({
       "error":"invalid url" 
     });
   } else {
