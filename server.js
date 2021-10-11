@@ -113,9 +113,9 @@ app.post('/removeAll', urlencodedParser, function(req, res) {
 app.post('/api/shorturl', urlencodedParser, (req, res) => {
   // Parse input
   input_url = req.body.url;
-  
+  const httpRegex = /^(http|https)(:\/\/)/;
   // Input Validation
-  if (!validUrl.isUri(input_url)) {
+  if (!httpRegex.test(input_url)) {
     res.status(401).json({
       "error":"Invalid URL" 
     });
