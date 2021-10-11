@@ -5,6 +5,7 @@ const dns = require('dns');
 var bodyParser = require('body-parser');
 const app = express();
 const router = express.Router();
+var validUrl = require('valid-url');
 // DB
 var mongoose = require('mongoose');
 var mongodb = require('mongodb');
@@ -114,8 +115,8 @@ app.post('/api/shorturl', urlencodedParser, (req, res) => {
   input_url = req.body.url;
   
   // Input Validation
-  if (!input_url.includes("http://")) {
-    res.status(200).json({
+  if (!validUrl.isWebUri(input_url)) {
+    res.status(401).json({
       "error":"invalid url" 
     });
   } else {
