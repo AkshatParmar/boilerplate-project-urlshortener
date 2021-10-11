@@ -115,7 +115,7 @@ app.post('/api/shorturl', urlencodedParser, (req, res) => {
   input_url = req.body.url;
   
   // Input Validation
-  if (!validUrl.isWebUri(input_url)) {
+  if (!validUrl.isUri(input_url)) {
     res.status(401).json({
       "error":"invalid url" 
     });
